@@ -9,11 +9,14 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.auth.mongo.MongoAuth;
 import io.vertx.ext.mongo.MongoClient;
-
+import io.vertx.ext.sql.SQLClient;
 public class PersistenceVerticle extends AbstractVerticle{
-
+ /*
+ https://vertx.io/docs/vertx-jdbc-client/java/ Tutorial för jdbc driver
+  */
   // for DB access
   private MongoClient mongoClient;
+  private SQLClient sqlClient;
 
   // Authentication provider for logging in
   private MongoAuth loginAuthProvider;
