@@ -55,7 +55,6 @@ public class HttpVerticle extends AbstractVerticle{
           .setStatusCode(201)
           .putHeader("Content-Type", "application/json; charset=utf-8")
           .end(Json.encodePrettily(ar.result().body()));
-        routingContext.response().setStatusCode(200);
       }else{
         routingContext.response()
           .setStatusCode(500)
