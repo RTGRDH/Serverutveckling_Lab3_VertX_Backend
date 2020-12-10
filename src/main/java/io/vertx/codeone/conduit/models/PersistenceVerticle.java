@@ -18,7 +18,7 @@ public class PersistenceVerticle extends AbstractVerticle{
   @Override
   public void start(Future<Void> startFuture) {
     // Configure the MongoClient inline.  This should be externalized into a config file
-    mongoClient = MongoClient.createShared(vertx, new JsonObject().put("test", config().getString("test", "data")).put("connection_string", config().getString("connection_string", "mongodb://localhost:27017/test")));
+    mongoClient = MongoClient.createShared(vertx, new JsonObject().put("data", config().getString("data", "data")).put("connection_string", config().getString("connection_string", "mongodb://localhost:27017/data")));
     EventBus eventBus = vertx.eventBus();
     MessageConsumer<JsonObject> consumer = eventBus.consumer("persistence-address");
 
@@ -27,10 +27,10 @@ public class PersistenceVerticle extends AbstractVerticle{
       String action = message.body().getString("action");
 
       switch (action) {
-        case "register-user":
-          regVals(message);
+        case "register":
+          regX(message);
           break;
-        case "get-user":
+        case "get-vals":
           getVals(message);
           break;
         default:
@@ -44,7 +44,7 @@ public class PersistenceVerticle extends AbstractVerticle{
 
   private void getVals(Message<JsonObject> message) {
     JsonObject result = new JsonObject();
-    mongoClient.find("data", result, res->{
+    mongoClient.find("coords", result, res->{
       if(res.succeeded())
       {
         /*
@@ -52,7 +52,7 @@ public class PersistenceVerticle extends AbstractVerticle{
           {
             result.put("X",json.getJsonArray("X")).put("Y",json.getJsonArray("Y"));
           }*/
-          result.put("X",res.result().get(0).getJsonArray("X")).put("Y",res.result().get(0).getJsonArray("Y"));
+        result.put("X",res.result().get(0).getJsonArray("X")).put("Y",res.result().get(0).getJsonArray("Y"));
         message.reply(result);
         }
       else
@@ -61,20 +61,20 @@ public class PersistenceVerticle extends AbstractVerticle{
       }
     });
   }
-  private void regVals(Message<JsonObject> message) {
+  private void regX(Message<JsonObject> message) {
     Random rand = new Random();
     ArrayList xVal = new ArrayList<Integer>();
     ArrayList yVal = new ArrayList<Integer>();
     for(int i = 0; i < 100; i++)
     {
-      xVal.add(i,rand.nextInt(100)+1);
+      xVal.add(i,rand.nextInt(5)+1);
     }
     for(int i = 0; i < 100; i++)
     {
-      yVal.add(i,rand.nextInt(100)+1);
+      yVal.add(i,rand.nextInt(5)+1);
     }
-    JsonObject vals = new JsonObject().put("X",xVal).put("Y",yVal);
-    mongoClient.save("data",vals,res ->{
+    JsonObject data = new JsonObject().put("X",xVal).put("Y",yVal);
+    mongoClient.save("coords",data,res ->{
       if(res.succeeded())
       {
         System.out.println("Saved successfully");

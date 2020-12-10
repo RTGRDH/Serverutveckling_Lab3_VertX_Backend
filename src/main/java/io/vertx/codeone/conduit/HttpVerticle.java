@@ -6,13 +6,13 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CorsHandler;
 
 public class HttpVerticle extends AbstractVerticle{
   @Override
   public void start(Future<Void> startFuture) {
     Router router = Router.router(vertx);
-    router.route().handler(BodyHandler.create());
+    router.route().handler(CorsHandler.create(".*."));
     router.post("/regVals").handler(this::regVals);
     router.get("/getVals").handler(this::getVals);
 
@@ -27,7 +27,7 @@ public class HttpVerticle extends AbstractVerticle{
       });
   }
   private void getVals(RoutingContext routingContext) {
-    JsonObject message = new JsonObject().put("action","get-user");
+    JsonObject message = new JsonObject().put("action","get-vals");
     vertx.eventBus().send("persistence-address",message,ar ->{
       if(ar.succeeded())
       {
@@ -48,7 +48,7 @@ public class HttpVerticle extends AbstractVerticle{
   }
   private void regVals(RoutingContext routingContext) {
     JsonObject message = new JsonObject()
-      .put("action", "register-user");
+      .put("action", "register");
     vertx.eventBus().send("persistence-address", message, ar -> {
       if (ar.succeeded()) {
         routingContext.response()
@@ -62,7 +62,6 @@ public class HttpVerticle extends AbstractVerticle{
           .putHeader("Content-Type", "application/json; charset=utf-8")
           //.putHeader("Content-Length", String.valueOf(userResult.toString().length()))
           .end(Json.encodePrettily(ar.cause().getMessage()));
-
       }
     });
   }
