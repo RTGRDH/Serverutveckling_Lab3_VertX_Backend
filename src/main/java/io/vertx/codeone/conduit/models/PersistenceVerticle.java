@@ -18,7 +18,7 @@ public class PersistenceVerticle extends AbstractVerticle{
   @Override
   public void start(Future<Void> startFuture) {
     // Configure the MongoClient inline.  This should be externalized into a config file
-    mongoClient = MongoClient.createShared(vertx, new JsonObject().put("data", config().getString("data", "data")).put("connection_string", config().getString("connection_string", "mongodb://localhost:27017/data")));
+    mongoClient = MongoClient.createShared(vertx, new JsonObject().put("backend-mongodb", config().getString("backend-mongodb", "data")).put("connection_string", config().getString("connection_string", "mongodb://backend-mongodb:27017/test")));
     EventBus eventBus = vertx.eventBus();
     MessageConsumer<JsonObject> consumer = eventBus.consumer("persistence-address");
 
